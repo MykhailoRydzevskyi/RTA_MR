@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DeliveryEvent",
+  "description": "Event published to deliveries.events when stock arrives from a supplier.",
+  "type": "object",
+  "required": ["event_id", "product_id", "supplier_id", "quantity", "timestamp"],
+  "properties": {
+    "event_id": { "type": "string", "example": "DEL-0001" },
+    "product_id": { "type": "string", "example": "P001" },
+    "supplier_id": { "type": "string", "example": "SUP-01" },
+    "quantity": { "type": "integer", "minimum": 1, "example": 100 },
+    "expected_at": { "type": "string", "format": "date-time", "example": "2026-06-07T08:00:00" },
+    "timestamp": { "type": "string", "format": "date-time", "example": "2026-06-05T10:15:00" }
+  },
+  "additionalProperties": false
+}

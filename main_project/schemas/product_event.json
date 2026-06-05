@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProductCatalogEvent",
+  "description": "Event published to products.catalog when product master data is created or updated.",
+  "type": "object",
+  "required": ["event_id", "product_id", "name", "category", "unit", "reorder_level", "supplier_id", "timestamp"],
+  "properties": {
+    "event_id": { "type": "string", "example": "PROD-0001" },
+    "product_id": { "type": "string", "example": "P001" },
+    "name": { "type": "string", "example": "Laptop 14\"" },
+    "category": { "type": "string", "example": "elektronika" },
+    "unit": { "type": "string", "example": "szt" },
+    "reorder_level": { "type": "integer", "minimum": 0, "example": 10 },
+    "supplier_id": { "type": "string", "example": "SUP-01" },
+    "unit_cost": { "type": "number", "minimum": 0, "example": 3499.0 },
+    "timestamp": { "type": "string", "format": "date-time", "example": "2026-06-05T10:15:00" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SaleEvent",
+  "description": "Event published to sales.events when a product is sold.",
+  "type": "object",
+  "required": ["event_id", "product_id", "quantity", "unit_price", "store_id", "timestamp"],
+  "properties": {
+    "event_id": { "type": "string", "example": "SALE-0001" },
+    "product_id": { "type": "string", "example": "P001" },
+    "quantity": { "type": "integer", "minimum": 1, "example": 2 },
+    "unit_price": { "type": "number", "minimum": 0, "example": 49.99 },
+    "store_id": { "type": "string", "example": "WAW-01" },
+    "timestamp": { "type": "string", "format": "date-time", "example": "2026-06-05T10:15:00" }
+  },
+  "additionalProperties": false
+}

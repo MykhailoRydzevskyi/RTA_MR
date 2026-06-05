@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ForecastEvent",
+  "description": "Event published to forecasts.demand with demand prediction output.",
+  "type": "object",
+  "required": ["product_id", "forecast_horizon_days", "predicted_demand", "generated_at"],
+  "properties": {
+    "product_id": { "type": "string", "example": "P001" },
+    "forecast_horizon_days": { "type": "integer", "minimum": 1, "example": 7 },
+    "predicted_demand": { "type": "number", "minimum": 0, "example": 35.5 },
+    "sales_velocity": { "type": "number", "minimum": 0, "example": 5.07 },
+    "stockout_risk": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"], "example": "MEDIUM" },
+    "generated_at": { "type": "string", "format": "date-time", "example": "2026-06-05T10:15:00" }
+  },
+  "additionalProperties": false
+}

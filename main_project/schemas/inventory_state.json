@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InventoryStateEvent",
+  "description": "Event published to inventory.states after stock level is updated.",
+  "type": "object",
+  "required": ["product_id", "quantity_on_hand", "reorder_level", "updated_at"],
+  "properties": {
+    "product_id": { "type": "string", "example": "P001" },
+    "quantity_on_hand": { "type": "integer", "minimum": 0, "example": 42 },
+    "reorder_level": { "type": "integer", "minimum": 0, "example": 10 },
+    "updated_at": { "type": "string", "format": "date-time", "example": "2026-06-05T10:15:00" }
+  },
+  "additionalProperties": false
+}
