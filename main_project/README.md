@@ -9,6 +9,15 @@ Wzorzec techniczny: [sebkaz/jupyterlab-project](https://github.com/sebkaz/jupyte
 - Docker Desktop (z `docker compose`)
 - Git
 
+## Dwa tryby pracy
+
+| Tryb | Kto | Co robi |
+|------|-----|---------|
+| **Lokalny** | Każdy u siebie | `docker compose up` — własna Kafka i PG |
+| **Wspólny serwer** | Ty hostujesz, reszta łączy się po IP | Ty: Docker + firewall. Koledzy: tylko kod Python, bez Dockera |
+
+Szczegóły wspólnego serwera: sekcja [Wspólny serwer z Twojego PC](#wspólny-serwer-z-twojego-pc) poniżej.
+
 ## Szybki start
 
 ```bash
@@ -176,6 +185,114 @@ POSTGRES_PASSWORD=inventory
 REDIS_HOST=redis
 JUPYTER_TOKEN=root
 ```
+
+## Wspólny serwer z Twojego PC
+
+Jeden komputer (host) trzyma włączone `docker compose up`. Reszta zespołu łączy się po **adresie IP hosta** w tej samej sieci (Wi‑Fi uczelni / dom).
+
+### Krok 1 — Ty (host serwera)
+
+**1.** Sprawdź swoje IP w PowerShell:
+
+```powershell
+ipconfig
+```
+
+Szukaj **IPv4** przy Wi‑Fi lub Ethernet, np. `192.168.1.50`.
+
+**2.** Skopiuj konfigurację i wpisz swoje IP:
+
+```powershell
+copy .env.example .env
+notepad .env
+```
+
+W `.env` ustaw (podmień na swoje IP):
+
+```env
+KAFKA_EXTERNAL_HOST=192.168.1.50
+KAFKA_BOOTSTRAP_HOST=192.168.1.50:29092
+```
+
+**3.** Uruchom stack:
+
+```powershell
+docker compose up -d --build
+```
+
+**4.** Otwórz porty w firewall Windows (PowerShell **jako Administrator**):
+
+```powershell
+.\scripts\open-firewall.ps1
+```
+
+**5.** Podaj zespołowi:
+- swoje **IPv4** (np. `192.168.1.50`)
+- hasła z `.env`: user/hasło PG = `inventory`, token Jupyter = `root`
+
+Twój laptop musi być **włączony**, Docker **uruchomiony**, wszyscy w **tej samej sieci** (LAN / hotspot).
+
+### Krok 2 — Kolega (klient, bez pełnego Dockera)
+
+**1.** Klonuje repo (tylko kod):
+
+```powershell
+git clone https://github.com/MykhailoRydzevskyi/RTA_MR.git
+cd RTA_MR\main_project
+```
+
+**2.** Tworzy `.env` z szablonu klienta:
+
+```powershell
+copy .env.client.example .env
+notepad .env
+```
+
+Podmienia `192.168.1.50` na **IP hosta**.
+
+**3.** Instaluje biblioteki Python (venv u siebie):
+
+```powershell
+python -m venv venv
+venv\Scripts\activate
+pip install kafka-python-ng psycopg2-binary redis
+```
+
+**4.** Łączy się w kodzie:
+
+```python
+import os
+from dotenv import load_dotenv  # opcjonalnie: pip install python-dotenv
+
+load_dotenv()
+KAFKA = os.environ["KAFKA_BOOTSTRAP_HOST"]   # np. 192.168.1.50:29092
+PG_HOST = os.environ["POSTGRES_HOST"]          # np. 192.168.1.50
+```
+
+Albo na sztywno:
+
+```python
+bootstrap_servers="192.168.1.50:29092"
+# PostgreSQL: host=192.168.1.50, port=5432, dbname=inventory, user=inventory, password=inventory
+# Redis: host=192.168.1.50, port=6379
+```
+
+**Kolega nie musi** uruchamiać `docker compose up` — korzysta z Twojej Kafki i baz.
+
+### Adresy dla klientów (zamiast localhost)
+
+| Usługa | Adres u klienta |
+|--------|-----------------|
+| Kafka | `HOST_IP:29092` |
+| PostgreSQL | `HOST_IP:5432` |
+| Redis | `HOST_IP:6379` |
+| Jupyter (opcjonalnie) | http://HOST_IP:8999 |
+
+### Rozwiązywanie problemów
+
+- **Kolega nie łączy się z Kafką** — sprawdź `KAFKA_EXTERNAL_HOST` w `.env` hosta (musi być IP LAN, nie `localhost`), zrestartuj: `docker compose down && docker compose up -d`
+- **Timeout** — firewall, inna sieć Wi‑Fi, VPN wyłączony
+- **Tylko demo lokalne** — każdy uruchamia własny `docker compose up` (tryb lokalny)
 
 ## Onboarding zespołu
 
